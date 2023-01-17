@@ -21,6 +21,7 @@
     "jsonwebtoken": "^9.0.0",
     "mongodb": "^4.13.0",
     "mongoose": "^6.8.3",
+    "multer": "^1.4.5-lts.1",
     "p-reduce": "^3.0.0",
     "sanitize-html": "^2.8.1"
   },

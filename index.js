@@ -14,14 +14,17 @@ const MONGODB_URI = process.env.MONGODB_URI
 
 // routes
 import userRoutes from './users/user.routes.js'
+import campaignRoutes from './campaigns/campaign.routes.js'
 
 app.use(bodyParser.json())
-
-app.get('/', (req, res) => {
-    res.send('Hello world').status(200);
-});
+app.use((req, res, next) => {
+    res.setHeader('Content-Type', 'application/json')
+    next()
+})
 
 app.use(`/users`, userRoutes);
+app.use('/campaigns', campaignRoutes)
+app.use('/uploads', express.static('uploads'))
 
 database.init({
     databaseURL: MONGODB_URI,

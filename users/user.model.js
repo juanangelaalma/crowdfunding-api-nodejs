@@ -7,6 +7,13 @@ const userSchema = new mongoose.Schema({
     role: { type: String, required: true }
 })
 
+// related to Campaign Schema
+userSchema.virtual('campaigns', {
+    ref: 'Campaign',
+    localField: '_id',
+    foreignField: 'user_id'
+})
+
 const User = mongoose.model('User', userSchema)
 
 export default User

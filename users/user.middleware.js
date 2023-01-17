@@ -27,6 +27,7 @@ const decodeToken = (req, res, next) => {
 }
 
 const verifyToken = (req, res, next) => {
+    console.log("verifyToken")
     req.user = decodeToken(req, res, next)
     if(req.user) {
         next()
