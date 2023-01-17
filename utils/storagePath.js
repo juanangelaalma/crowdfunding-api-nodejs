@@ -1,0 +1,1 @@
+export default (path = '') => `storage/${path}`

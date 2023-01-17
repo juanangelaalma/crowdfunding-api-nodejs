@@ -9,22 +9,21 @@ const app = express()
 const server = http.createServer(app)
 
 dotenv.config()
-const APP_PORT = process.env.PORT || 3000
+const APP_PORT = process.env.APP_PORT || 3000
 const MONGODB_URI = process.env.MONGODB_URI
 
 // routes
 import userRoutes from './users/user.routes.js'
 import campaignRoutes from './campaigns/campaign.routes.js'
+import storagePath from "./utils/storagePath.js";
+import assetsPath from "./utils/assetsPath.js";
 
 app.use(bodyParser.json())
-app.use((req, res, next) => {
-    res.setHeader('Content-Type', 'application/json')
-    next()
-})
 
 app.use(`/users`, userRoutes);
 app.use('/campaigns', campaignRoutes)
-app.use('/uploads', express.static('uploads'))
+console.log(assetsPath())
+app.use(`/${storagePath()}`, express.static(assetsPath()))
 
 database.init({
     databaseURL: MONGODB_URI,

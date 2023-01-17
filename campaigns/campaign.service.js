@@ -1,6 +1,7 @@
 import Campaign from "./campaign.model.js";
 import path from "path";
 import {IMAGES_CAMPAIGN_DIRECTORY} from "./campaign.types.js";
+import storagePath from "../utils/storagePath.js";
 
 const addDaysToCurrentDate = (days) => {
     const currentDate = new Date()
@@ -9,7 +10,7 @@ const addDaysToCurrentDate = (days) => {
 
 const getFullUriImage = (image) => {
     const baseUrl = process.env.APP_BASE_URL
-    const imageDirectory = path.relative('.', IMAGES_CAMPAIGN_DIRECTORY)
+    const imageDirectory = path.relative('.', storagePath(IMAGES_CAMPAIGN_DIRECTORY))
     return `${baseUrl}/${imageDirectory}/${image.filename}`
 }
 

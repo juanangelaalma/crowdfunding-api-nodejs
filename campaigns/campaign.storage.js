@@ -2,6 +2,7 @@ import multer from 'multer';
 import {IMAGES_CAMPAIGN_DIRECTORY} from "./campaign.types.js";
 import errorHandler, { HttpError } from "../error_handlers/index.js";
 import { createDirectoryIfNotExists } from "../utils/index.js";
+import assetsPath from "../utils/assetsPath.js";
 
 const createCampaignStorage = (dir) => {
     createDirectoryIfNotExists(dir)
@@ -15,7 +16,7 @@ const createCampaignStorage = (dir) => {
     })
 }
 
-const storage = createCampaignStorage(IMAGES_CAMPAIGN_DIRECTORY)
+const storage = createCampaignStorage(assetsPath(IMAGES_CAMPAIGN_DIRECTORY))
 
 const imageFilter = (req, file, cb) => {
     if (file.mimetype === 'image/png' || file.mimetype === 'image/jpg' || file.mimetype === 'image/jpeg') {
