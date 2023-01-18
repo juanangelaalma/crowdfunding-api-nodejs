@@ -15,8 +15,6 @@ router.put('/:campaignId', (req, res) => {
     res.send('update campaign')
 })
 
-router.delete('/:campaignId', (req, res) => {
-    res.send('delete campaign')
-})
+router.delete('/:campaignId', userMiddlewares.verifyToken, userMiddlewares.verifyAdmin, campaignController.deleteCampaign)
 
 export default router

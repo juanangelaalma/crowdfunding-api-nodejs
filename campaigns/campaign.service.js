@@ -50,6 +50,24 @@ const getCampaignById = async (campaignId) => {
     }
 }
 
+const deleteCampaign = async (campaignId) => {
+    try {
+        const campaign = await Campaign.findByIdAndDelete(campaignId)
+        if (!campaign) {
+            throw new HttpError(404, 'Campaign not found')
+        }
+        return generateResponse(campaign)
+    } catch (error) {
+        if(error instanceof mongoose.Error.CastError) {
+            throw new HttpError(400, 'Invalid campaign id')
+        }
+        if(error instanceof HttpError) {
+            throw error
+        }
+        throw new HttpError(500, 'Internal server error')
+    }
+}
+
 const generateResponse = (campaign) => {
     return {
         title: campaign.title,
@@ -66,7 +84,8 @@ const generateResponse = (campaign) => {
 const campaignService = Object.freeze({
     createCampaign,
     getAllCampaigns,
-    getCampaignById
+    getCampaignById,
+    deleteCampaign
 })
 
 export default campaignService

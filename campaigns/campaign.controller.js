@@ -27,10 +27,20 @@ const getCampaignById = async (req, res) => {
     }
 }
 
+const deleteCampaign = async (req, res) => {
+    try {
+        const campaign = await campaignService.deleteCampaign(req.params.campaignId)
+        res.status(200).send({ data: campaign, message: 'Campaign is deleted' })
+    } catch (error) {
+        errorHandler(error, req, res)
+    }
+}
+
 const campaignController = Object.freeze({
     createCampaign,
     getAllCampaigns,
-    getCampaignById
+    getCampaignById,
+    deleteCampaign
 })
 
 export default campaignController
