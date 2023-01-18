@@ -5,18 +5,11 @@ import userMiddlewares from "../users/user.middleware.js";
 
 const router = express.Router()
 
-router.get('/', (req, res) => {
-    res.send('get all campaigns')
-})
+router.get('/', campaignController.getAllCampaigns)
 
-router.get('/:campaignId', (req, res) => {
-    res.send(`get campaigns by id ${req.params.campaignId}`)
-})
+router.get('/:campaignId', campaignController.getCampaignById)
 
-router.post('/', (req, res, next) => {
-    console.log('accessed')
-    next()
-} , userMiddlewares.verifyToken, campaignStorages.imageUpload, campaignController.createCampaign)
+router.post('/', userMiddlewares.verifyToken, campaignStorages.imageUpload, campaignController.createCampaign)
 
 router.put('/:campaignId', (req, res) => {
     res.send('update campaign')

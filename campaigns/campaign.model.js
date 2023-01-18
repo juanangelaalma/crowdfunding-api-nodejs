@@ -7,7 +7,7 @@ const campaignSchema = new mongoose.Schema({
     image: { type: String, required: true },
     slug: { type: String },
     description: { type: String },
-    user_id: {
+    user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true
