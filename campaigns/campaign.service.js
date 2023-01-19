@@ -70,6 +70,7 @@ const deleteCampaign = async (campaignId) => {
 
 const generateResponse = (campaign) => {
     return {
+        _id: campaign._id,
         title: campaign.title,
         collected_target: campaign.collected_target,
         deadline: campaign.deadline,

@@ -17,11 +17,13 @@ import userRoutes from './users/user.routes.js'
 import campaignRoutes from './campaigns/campaign.routes.js'
 import storagePath from "./utils/storagePath.js";
 import assetsPath from "./utils/assetsPath.js";
+import donationRoutes from "./donations/donation.routes.js";
 
 app.use(bodyParser.json())
 
 app.use(`/users`, userRoutes);
 app.use('/campaigns', campaignRoutes)
+app.use('/donations', donationRoutes)
 console.log(assetsPath())
 app.use(`/${storagePath()}`, express.static(assetsPath()))
 

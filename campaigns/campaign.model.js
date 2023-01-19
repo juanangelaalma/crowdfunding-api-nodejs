@@ -15,6 +15,12 @@ const campaignSchema = new mongoose.Schema({
     created_at: { type: Date, default: Date.now() }
 })
 
+campaignSchema.virtual('donations', {
+    ref: 'Donation',
+    localField: '_id',
+    foreignField: 'campaign_id'
+})
+
 const Campaign = mongoose.model('Campaign', campaignSchema)
 
 export default Campaign

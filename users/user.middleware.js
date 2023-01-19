@@ -4,33 +4,28 @@ import userServices from "./user.service.js";
 
 const getTokenFromHeaders = (req) => {
     // get token from the headers
-    const token = req.headers['x-access-token'] || req.headers.authorization;
-
-    if(!token) {
-        throw new HttpError(401, "Access denied. No token provided.")
-    }
-
-    return token
+    return req.headers['x-access-token'] || req.headers.authorization;
 }
 
-const decodeToken = (req, res, next) => {
+const decodeToken = (req) => {
+    const token = getTokenFromHeaders(req)
+    // verify the token, will contain id of user
+    return token ? jwt.verify(token, process.env.JWT_SECRET) : null
+}
+
+const verifyToken = (req, res, next) => {
     try {
-        const token = getTokenFromHeaders(req)
-        // verify the token, will contain id of user
-        return jwt.verify(token, process.env.JWT_SECRET)
+        const user = decodeToken(req)
+        if(!user) {
+            errorHandler(new HttpError(401, "Access denied. No token provided."), req, res)
+        }
+        req.user = user
+        next()
     } catch (error) {
         if (error.name === 'TokenExpiredError') {
             error = new HttpError(401, "Token expired.")
         }
         errorHandler(error, req, res)
-    }
-}
-
-const verifyToken = (req, res, next) => {
-    console.log("verifyToken")
-    req.user = decodeToken(req, res, next)
-    if(req.user) {
-        next()
     }
 }
 
@@ -60,4 +55,4 @@ const userMiddlewares = Object.freeze({
 })
 
 export default userMiddlewares
-export { verifyToken, verifyAdmin }
+export { verifyToken, verifyAdmin, getTokenFromHeaders, decodeToken }

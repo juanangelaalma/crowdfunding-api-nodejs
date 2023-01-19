@@ -14,6 +14,7 @@ const getUsers = async (req, res, next) => {
     }
 }
 
+// Di controller terdapat application logic seperti validasi data request dan mengirimkan ke service
 const createUser = async (req, res, next) => {
     try {
         const userDataAfterValidation = userValidation.validateUserPost(req.body)
