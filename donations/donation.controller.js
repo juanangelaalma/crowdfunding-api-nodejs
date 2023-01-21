@@ -30,8 +30,8 @@ const createDonation = async (req, res, next) => {
     }
 }
 
-const donationController = {
+const donationController = Object.freeze({
     createDonation
-}
+})
 
 export default donationController

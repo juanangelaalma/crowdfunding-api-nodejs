@@ -7,7 +7,7 @@ const createDonationSchema = Joi.object().keys({
     amount: Joi.number().required(),
     comment: Joi.string(),
     is_anonymous: Joi.boolean().required(),
-    payment_type: Joi.string().required().valid('wallet', 'bank', 'cod'),
+    payment_type: Joi.string().required().valid('emoney', 'bank_transfer', 'cod'),
     entity_payment_name: Joi.string().required(),
     campaign_id: Joi.string().required(),
 })

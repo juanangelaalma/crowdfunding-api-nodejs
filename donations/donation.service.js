@@ -1,6 +1,8 @@
 import Donation from "./donation.model.js";
 import mongoose from "mongoose";
 import { HttpError } from "../error_handlers/index.js";
+import BankTransfer from "../payments/class/BankTransfer.js";
+import paymentController from "../payments/payment.controller.js";
 
 const addHoursToCurrentDate = (hours) => {
     Date.prototype.addHours = function(h) {
@@ -24,10 +26,25 @@ const generateInvoiceId = (prefix) => {
 
 const createDonation = async (newDonation) => {
     const { name, email, amount, comment, is_anonymous, payment_type, entity_payment_name, user_id, campaign_id } = newDonation
+    const invoice_id = generateInvoiceId('INV')
+    const item_details = {
+        id: invoice_id,
+        name: 'Donation',
+        price: amount,
+        quantity: 1
+    }
+    const customer_details = {
+        first_name: name,
+        email: email
+    }
+
     try {
+        const midtransResponse = await paymentController.createPaymentDonation({ ...newDonation, invoice_id, item_details, customer_details })
         const donation = await Donation.create({
-            invoice_id: generateInvoiceId('INV'),
+            invoice_id: invoice_id,
             name, email, amount, comment, is_anonymous, payment_type, entity_payment_name,
+            account_number: midtransResponse.va_numbers[0].va_number,
+            qr_code: midtransResponse.qr_code,
             deadline: addHoursToCurrentDate(24),
             cost_per_percent: process.env.DONATION_COST_PERCENT,
             payment_status: 'pending',
@@ -44,6 +61,10 @@ const createDonation = async (newDonation) => {
         if(error instanceof mongoose.Error.CastError) {
             throw new HttpError(400, 'Invalid campaign id')
         }
+        if(error instanceof HttpError) {
+            throw error
+        }
+        console.log(error)
         throw new HttpError(500, 'Internal server error')
     }
 }

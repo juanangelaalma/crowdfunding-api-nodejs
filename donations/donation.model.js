@@ -8,7 +8,7 @@ const donationSchema = new mongoose.Schema({
     comment: { type: String },
     is_anonymous: { type: Boolean, required: true },
     cost_per_percent: { type: Number, required: true },
-    payment_type: { type: String, enum: ['bank', 'wallet', 'cod'], default: 'cod', required: true },
+    payment_type: { type: String, enum: ['bank_transfer', 'emoney', 'cod'], default: 'cod', required: true },
     entity_payment_name: { type: String, required: true },
     account_number: { type: String },
     qr_code: { type: String },
