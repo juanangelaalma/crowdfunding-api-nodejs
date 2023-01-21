@@ -27,7 +27,8 @@ const createEmoneyPayment = async (payment) => {
             order_id: payment.invoice_id,
             amount: payment.amount,
             item_details: payment.item_details,
-            customer_details: payment.customer_details
+            customer_details: payment.customer_details,
+            emoney: payment.entity_payment_name
         })
         const midtransResponse = await core.charge()
         return midtransResponse

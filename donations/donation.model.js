@@ -12,6 +12,7 @@ const donationSchema = new mongoose.Schema({
     entity_payment_name: { type: String, required: true },
     account_number: { type: String },
     qr_code: { type: String },
+    deeplink: { type: String },
     deadline: { type: Date, required: true },
     payment_status: { type: String, enum: ['pending', 'success', 'failed'], default: 'pending', required: true },
     paid_at: { type: Date },
