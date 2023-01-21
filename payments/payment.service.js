@@ -1,5 +1,6 @@
 import BankTransfer from "./class/BankTransfer.js";
 import Donation from "../donations/donation.model.js";
+import EMoney from "./class/EMoney.js";
 
 const createBankPayment = async (payment)  => {
     try {
@@ -19,10 +20,17 @@ const createBankPayment = async (payment)  => {
     }
 }
 
-const updateDonationByInvoice = async (invoice, status) => {
+const createEmoneyPayment = async (payment) => {
     try {
-        const donation = await Donation.findOneAndUpdate({invoice_id: invoice}, {status: status}, {new: true})
-        return generateResponse(donation)
+        const core = new EMoney({
+            payment_type: payment.payment_type,
+            order_id: payment.invoice_id,
+            amount: payment.amount,
+            item_details: payment.item_details,
+            customer_details: payment.customer_details
+        })
+        const midtransResponse = await core.charge()
+        return midtransResponse
     } catch (error) {
         throw error
     }
@@ -30,7 +38,7 @@ const updateDonationByInvoice = async (invoice, status) => {
 
 const paymentService = Object.freeze({
     createBankPayment,
-    updateDonationByInvoice
+    createEmoneyPayment
 })
 
 export default paymentService

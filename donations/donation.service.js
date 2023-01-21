@@ -43,7 +43,7 @@ const createDonation = async (newDonation) => {
         const donation = await Donation.create({
             invoice_id: invoice_id,
             name, email, amount, comment, is_anonymous, payment_type, entity_payment_name,
-            account_number: midtransResponse.va_numbers[0].va_number,
+            account_number: midtransResponse.va_number,
             qr_code: midtransResponse.qr_code,
             deadline: addHoursToCurrentDate(24),
             cost_per_percent: process.env.DONATION_COST_PERCENT,
