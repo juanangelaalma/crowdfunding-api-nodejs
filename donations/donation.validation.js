@@ -1,5 +1,6 @@
 import Joi from 'joi'
 import {HttpError} from "../error_handlers/index.js";
+import campaignServices from "../campaigns/campaign.service.js";
 
 const createDonationSchema = Joi.object().keys({
     name: Joi.string(),
@@ -12,6 +13,15 @@ const createDonationSchema = Joi.object().keys({
     campaign_id: Joi.string().required(),
 })
 
+const campaignMustExist = async (campaignId) => {
+    const campaign = await campaignServices.getCampaignById(campaignId)
+    console.log(campaign)
+    if(!campaign) {
+        throw new HttpError(404, 'Campaign not found')
+    }
+    return campaign
+}
+
 const validateCreateDonation = (donationData) => {
     const { error, value } = createDonationSchema.validate(donationData)
     if(error) {
@@ -21,7 +31,8 @@ const validateCreateDonation = (donationData) => {
 }
 
 const donationValidation = Object.freeze({
-    validateCreateDonation
+    validateCreateDonation,
+    campaignMustExist
 })
 
 export default donationValidation

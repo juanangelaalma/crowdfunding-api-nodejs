@@ -6,7 +6,8 @@ import donationValidation from "./donation.validation.js";
 
 const createDonation = async (req, res, next) => {
     try {
-        const validation = await donationValidation.validateCreateDonation(req.body);
+        await donationValidation.campaignMustExist(req.body.campaign_id)
+        await donationValidation.validateCreateDonation(req.body);
 
         const user = decodeToken(req)
         let userData = null

@@ -13,7 +13,6 @@ dotenv.config()
 const APP_PORT = process.env.APP_PORT || 3000
 const MONGODB_URI = process.env.MONGODB_URI
 
-// routes
 import userRoutes from './users/user.routes.js'
 import campaignRoutes from './campaigns/campaign.routes.js'
 import storagePath from "./utils/storagePath.js";
