@@ -69,6 +69,18 @@ const createDonation = async (newDonation) => {
     }
 }
 
+const updateDonationByInvoice = async (invoice, status) => {
+    try {
+        const donation = await Donation.findOneAndUpdate({ invoice_id: invoice }, { payment_status: status, paid_at: Date.now() }, { new: true })
+        if(!donation) {
+            throw new HttpError(404, 'Donation not found')
+        }
+        return generateResponse(donation)
+    } catch (error) {
+        throw error
+    }
+}
+
 const generateResponse = (donation) => {
     return {
         name: donation.name,
@@ -92,7 +104,8 @@ const generateResponse = (donation) => {
 }
 
 const donationServices = Object.freeze({
-    createDonation
+    createDonation,
+    updateDonationByInvoice
 })
 
 export default donationServices

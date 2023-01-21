@@ -3,6 +3,7 @@ import bodyParser from 'body-parser'
 import dotenv from 'dotenv'
 import database from './database/database.js'
 import http from 'http'
+import cors from 'cors'
 
 const app = express()
 
@@ -18,13 +19,16 @@ import campaignRoutes from './campaigns/campaign.routes.js'
 import storagePath from "./utils/storagePath.js";
 import assetsPath from "./utils/assetsPath.js";
 import donationRoutes from "./donations/donation.routes.js";
+import paymentRoutes from "./payments/payment.routes.js";
 
 app.use(bodyParser.json())
+app.use(cors())
 
 app.use(`/users`, userRoutes);
 app.use('/campaigns', campaignRoutes)
 app.use('/donations', donationRoutes)
-console.log(assetsPath())
+app.use('/payment', paymentRoutes)
+
 app.use(`/${storagePath()}`, express.static(assetsPath()))
 
 database.init({

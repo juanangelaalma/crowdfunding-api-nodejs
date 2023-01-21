@@ -1,4 +1,5 @@
 import BankTransfer from "./class/BankTransfer.js";
+import Donation from "../donations/donation.model.js";
 
 const createBankPayment = async (payment)  => {
     try {
@@ -18,8 +19,18 @@ const createBankPayment = async (payment)  => {
     }
 }
 
+const updateDonationByInvoice = async (invoice, status) => {
+    try {
+        const donation = await Donation.findOneAndUpdate({invoice_id: invoice}, {status: status}, {new: true})
+        return generateResponse(donation)
+    } catch (error) {
+        throw error
+    }
+}
+
 const paymentService = Object.freeze({
-    createBankPayment
+    createBankPayment,
+    updateDonationByInvoice
 })
 
 export default paymentService
