@@ -36,11 +36,30 @@ const deleteCampaign = async (req, res) => {
     }
 }
 
+const getCampaignComments = async (req, res) => {
+    try {
+        const comments = await campaignService.getCampaignComments(req.params.campaignId)
+        res.status(200).send({ data: comments, message: 'Retrieve comments successfully' })
+    } catch (error) {
+        errorHandler(error, req, res)
+    }
+}
+
+const getCampaignDonors = async (req, res) => {
+    try {
+
+    } catch (error) {
+        errorHandler(error, req, res)
+    }
+}
+
 const campaignController = Object.freeze({
     createCampaign,
     getAllCampaigns,
     getCampaignById,
-    deleteCampaign
+    deleteCampaign,
+    getCampaignComments,
+    getCampaignDonors
 })
 
 export default campaignController

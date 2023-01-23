@@ -9,6 +9,10 @@ router.get('/', campaignController.getAllCampaigns)
 
 router.get('/:campaignId', campaignController.getCampaignById)
 
+router.get('/:campaignId/comments', campaignController.getCampaignComments);
+
+router.get('/:campaignId/donors', campaignController.getCampaignDonors);
+
 router.post('/', userMiddlewares.verifyToken, campaignStorages.imageUpload, campaignController.createCampaign)
 
 router.put('/:campaignId', (req, res) => {
