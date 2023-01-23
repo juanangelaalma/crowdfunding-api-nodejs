@@ -14,6 +14,12 @@ userSchema.virtual('campaigns', {
     foreignField: 'user_id'
 })
 
+userSchema.virtual('donations', {
+    ref: 'Donation',
+    localField: '_id',
+    foreignField: 'user'
+})
+
 const User = mongoose.model('User', userSchema)
 
 export default User

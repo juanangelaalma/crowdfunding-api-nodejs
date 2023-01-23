@@ -17,7 +17,7 @@ const donationSchema = new mongoose.Schema({
     payment_status: { type: String, enum: ['pending', 'success', 'failed'], default: 'pending', required: true },
     paid_at: { type: Date },
     campaign: { type: mongoose.Schema.Types.ObjectId, ref: 'Campaign', required: true },
-    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: false },
+    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
 },
     {
         timestamps: {
@@ -26,6 +26,9 @@ const donationSchema = new mongoose.Schema({
         }
     }
 )
+
+donationSchema.set('toJSON', { virtuals: true })
+donationSchema.set('toObject', { virtuals: true })
 
 const Donation = mongoose.model('Donation', donationSchema)
 

@@ -6,12 +6,11 @@ import donationValidation from "./donation.validation.js";
 
 const createDonation = async (req, res, next) => {
     try {
-        await donationValidation.campaignMustExist(req.body.campaign_id)
         await donationValidation.validateCreateDonation(req.body);
 
         const user = decodeToken(req)
         let userData = null
-        const newDonation = { ...req.body, user_id: user._id }
+        const newDonation = { ...req.body, user_id: user.id }
 
         if(!newDonation.name) {
             userData = await userServices.getUser(user.id)
@@ -23,7 +22,7 @@ const createDonation = async (req, res, next) => {
             newDonation.email = userData.email
         }
 
-        const donation = await donationServices.createDonation(newDonation)
+        const donation = await donationServices.createDonation({ ...newDonation })
 
         res.status(201).json({ data: donation, message: 'create donation successfully' })
     } catch (error) {

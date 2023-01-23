@@ -3,7 +3,6 @@ import path from "path";
 import {IMAGES_CAMPAIGN_DIRECTORY} from "./campaign.types.js";
 import storagePath from "../utils/storagePath.js";
 import mongoose from "mongoose";
-import errorHandler, {HttpError} from "../error_handlers/index.js";
 
 const addDaysToCurrentDate = (days) => {
     const currentDate = new Date()
@@ -25,21 +24,273 @@ const createCampaign = async ({ title, collected_target, duration, image, slug, 
 }
 
 const getAllCampaigns = async () => {
-    const campaigns = await Campaign.find({}).populate({
-        path: 'user',
-        select: '_id name email'
-    }).sort({created_at: -1})
-    return campaigns.map(campaign => generateResponse(campaign))
+    const campaigns = await Campaign.aggregate([
+        {
+            $lookup: {
+                from: 'donations',
+                localField: 'donations',
+                foreignField: '_id',
+                as: 'donations',
+            },
+        },
+        {
+            $unwind: {
+                path: '$donations',
+                preserveNullAndEmptyArrays: true,
+            }
+        },
+        {
+            $group: {
+                _id: '$_id',
+                title: { $first: '$title' },
+                collected_target: { $first: '$collected_target' },
+                deadline: { $first: '$deadline' },
+                image: { $first: '$image' },
+                slug: { $first: '$slug' },
+                description: { $first: '$description' },
+                created_at: { $first: '$created_at' },
+                donationsCount: {
+                    $sum: {
+                        $cond: {
+                            if: { $eq: ['$donations.payment_status', 'success'] },
+                            then: 1,
+                            else: 0,
+                        }
+                    }
+                },
+                totalAmount: {
+                    $sum: {
+                        $cond: {
+                            if: { $eq: ['$donations.payment_status', 'success'] },
+                            then: '$donations.amount',
+                            else: 0,
+                        }
+                    }
+                },
+            }
+        }
+    ])
+    return campaigns;
 }
+
+
+// const campaign = await Campaign.aggregate([
+//             { $match: { _id: mongoose.Types.ObjectId(campaignId) } },
+//             {
+//                 $lookup: {
+//                     from: 'users',
+//                     localField: 'user',
+//                     foreignField: '_id',
+//                     as: 'user'
+//                 }
+//             },
+//             {
+//                 $unwind: {
+//                     path: '$user',
+//                     preserveNullAndEmptyArrays: true
+//                 }
+//             },
+//             {
+//                 $lookup: {
+//                     from: 'donations',
+//                     localField: 'donations',
+//                     foreignField: '_id',
+//                     as: 'donations'
+//                 }
+//             },
+//             {
+//                 $unwind: {
+//                     path: '$donations',
+//                     preserveNullAndEmptyArrays: true
+//                 }
+//             },
+//             { $match: { 'donations.payment_status': 'success' } },
+//             {
+//                 $lookup: {
+//                     from: 'users',
+//                     localField: 'donations.user',
+//                     foreignField: '_id',
+//                     as: 'donations.user'
+//                 }
+//             },
+//             {
+//                 $unwind: {
+//                     path: '$donations.user',
+//                     preserveNullAndEmptyArrays: true
+//                 }
+//             },
+//             {
+//                 $group: {
+//                     _id: '$_id',
+//                     title: { $first: '$title' },
+//                     collected_target: { $first: '$collected_target' },
+//                     deadline: { $first: '$deadline' },
+//                     image: { $first: '$image' },
+//                     slug: { $first: '$slug' },
+//                     description: { $first: '$description' },
+//                     user: { $first: '$user' },
+//                     totalAmount: { $sum: '$donations.amount' },
+//                     donationsCount: { $sum: 1 },
+//                     donations: { $push: '$donations' }
+//                 }
+//             },
+//             {
+//                 $project: {
+//                     _id: 1,
+//                     title: 1,
+//                     collected_target: 1,
+//                     deadline: 1,
+//                     image: 1,
+//                     slug: 1,
+//                     description: 1,
+//                     user: {
+//                         _id: '$user._id',
+//                         name: '$user.name',
+//                         email: '$user.email'
+//                     },
+//                     totalAmount: 1,
+//                     donationsCount: 1,
+//                     donations: {
+//                         $filter: {
+//                             input: '$donations',
+//                             as: 'donation',
+//                             cond: { $eq: ['$$donation.payment_status', 'success'] },
+//                         },
+//                     },
+//                     donations: {
+//                         $map: {
+//                             input: '$donations',
+//                             as: 'donation',
+//                             in: {
+//                                 _id: '$$donation._id',
+//                                 amount: '$$donation.amount',
+//                                 payment_status: '$$donation.payment_status',
+//                                 user: {
+//                                     _id: '$$donation.user._id',
+//                                     name: '$$donation.user.name',
+//                                     email: '$$donation.user.email'
+//                                 }
+//                             }
+//                         }
+//                     }
+//                 }
+//             }
+//         ])
 
 const getCampaignById = async (campaignId) => {
     try {
-        const campaign = await Campaign.findById(campaignId)
+        const campaign = await Campaign.aggregate([
+            { $match: { _id: mongoose.Types.ObjectId(campaignId) } },
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: 'user',
+                    foreignField: '_id',
+                    as: 'user'
+                }
+            },
+            {
+                $unwind: {
+                    path: '$user',
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                $lookup: {
+                    from: 'donations',
+                    localField: 'donations',
+                    foreignField: '_id',
+                    as: 'donations'
+                }
+            },
+            {
+                $unwind: {
+                    path: '$donations',
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: 'donations.user',
+                    foreignField: '_id',
+                    as: 'donations.user'
+                }
+            },
+            {
+                $unwind: {
+                    path: '$donations.user',
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                $group: {
+                    _id: '$_id',
+                    title: { $first: '$title' },
+                    collected_target: { $first: '$collected_target' },
+                    deadline: { $first: '$deadline' },
+                    image: { $first: '$image' },
+                    slug: { $first: '$slug' },
+                    description: { $first: '$description' },
+                    user: { $first: '$user' },
+                    totalAmount: { $sum: '$donations.amount' },
+                    donationsCount: {
+                        $sum: {
+                            $cond: [
+                                { $eq: ['$donations.payment_status', 'success'] }, 1, 0
+                            ]
+                        }
+                    },
+                    donations: {
+                        $push: {
+                            $cond: [
+                                { $eq: ['$donations.payment_status', 'success'] }, '$donations', "$$REMOVE"
+                            ]
+                        }
+                    }
+                }
+            },
+            {
+                $project: {
+                    _id: 1,
+                    title: 1,
+                    collected_target: 1,
+                    deadline: 1,
+                    image: 1,
+                    slug: 1,
+                    description: 1,
+                    user: {
+                        _id: '$user._id',
+                        name: '$user.name',
+                        email: '$user.email'
+                    },
+                    totalAmount: 1,
+                    donationsCount: 1,
+                    donations: {
+                        $map: {
+                            input: '$donations',
+                            as: 'donation',
+                            in: {
+                                _id: '$$donation._id',
+                                amount: '$$donation.amount',
+                                payment_status: '$$donation.payment_status',
+                                user: {
+                                    _id: '$$donation.user._id',
+                                    name: '$$donation.user.name',
+                                    email: '$$donation.user.email'
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        ])
         if (!campaign) {
             throw new HttpError(404, 'Campaign not found')
         }
-        return generateResponse(campaign)
+        return campaign
     } catch (error) {
+        console.log(error)
         if(error instanceof mongoose.Error.CastError) {
             throw new HttpError(400, 'Invalid campaign id')
         }

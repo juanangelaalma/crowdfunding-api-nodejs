@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import { HttpError } from "../error_handlers/index.js";
 import BankTransfer from "../payments/class/BankTransfer.js";
 import paymentController from "../payments/payment.controller.js";
+import Campaign from "../campaigns/campaign.model.js";
 
 const addHoursToCurrentDate = (hours) => {
     Date.prototype.addHours = function(h) {
@@ -54,6 +55,7 @@ const createDonation = async (newDonation) => {
             create_at: Date.now(),
             updated_at: Date.now()
         })
+        const pushDonationToCampaign = await Campaign.findByIdAndUpdate(campaign_id, { $push: { donations: donation._id } })
         return generateResponse(donation)
     } catch (error) {
         if(error instanceof mongoose.Error.ValidationError) {

@@ -22,7 +22,7 @@ const createBankPayment = async (payment)  => {
 
 const createEmoneyPayment = async (payment) => {
     try {
-        const core = new EMoney({
+        const core = new m({
             payment_type: payment.payment_type,
             order_id: payment.invoice_id,
             amount: payment.amount,
