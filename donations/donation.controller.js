@@ -3,7 +3,6 @@ import {decodeToken} from "../users/user.middleware.js";
 import userServices from "../users/user.service.js";
 import donationServices from "./donation.service.js";
 import donationValidation from "./donation.validation.js";
-import {HttpError} from "../error_handlers/index.js";
 
 const createDonation = async (req, res, next) => {
     try {
@@ -29,7 +28,6 @@ const createDonation = async (req, res, next) => {
 
         res.status(201).json({ data: donation, message: 'create donation successfully' })
     } catch (error) {
-        console.log(error)
         errorHandler(error, req, res)
     }
 }
