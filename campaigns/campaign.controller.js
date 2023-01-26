@@ -47,7 +47,8 @@ const getCampaignComments = async (req, res) => {
 
 const getCampaignDonors = async (req, res) => {
     try {
-
+        const donors = await campaignService.getCampaignDonors(req.params.campaignId)
+        res.status(200).send({ data: donors, message: 'Retrieve donors successfully' })
     } catch (error) {
         errorHandler(error, req, res)
     }

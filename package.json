@@ -26,6 +26,7 @@
     "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.9.0",
     "p-reduce": "^3.0.0",
+    "redis": "^4.5.1",
     "sanitize-html": "^2.8.1"
   },
   "devDependencies": {
