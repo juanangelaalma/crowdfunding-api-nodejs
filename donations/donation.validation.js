@@ -1,6 +1,7 @@
 import Joi from 'joi'
 import {HttpError} from "../error_handlers/index.js";
 import campaignServices from "../campaigns/campaign.service.js";
+import {  getTokenFromHeaders } from "../users/user.middleware.js";
 
 const createDonationSchema = Joi.object().keys({
     name: Joi.string(),
@@ -30,9 +31,23 @@ const validateCreateDonation = (donationData) => {
     return value
 }
 
+const ifNoTokenNameAndEmailIsRequired = async (req) => {
+    const token = getTokenFromHeaders(req)
+    if(!token) {
+        const { name, email } = req.body
+        if(!name) {
+            throw new HttpError(400, 'Name is required')
+        }
+        if(!email) {
+            throw new HttpError(400, 'Email is required')
+        }
+    }
+}
+
 const donationValidation = Object.freeze({
     validateCreateDonation,
-    campaignMustExist
+    campaignMustExist,
+    ifNoTokenNameAndEmailIsRequired
 })
 
 export default donationValidation
