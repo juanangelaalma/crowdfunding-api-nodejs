@@ -78,7 +78,11 @@ const getAllCampaigns = async () => {
 const getCampaignById = async (campaignId) => {
     try {
         const campaign = await Campaign.aggregate([
-            { $match: { _id: mongoose.Types.ObjectId(campaignId) } },
+            {
+                $match: {
+                    _id: mongoose.Types.ObjectId(campaignId)
+                }
+            },
             {
                 $lookup: {
                     from: 'users',
@@ -181,12 +185,14 @@ const getCampaignById = async (campaignId) => {
                         }
                     }
                 }
-            }
+            },
+
         ])
         if (!campaign) {
             throw new HttpError(404, 'Campaign not found')
         }
-        return campaign
+        const campaignObject = campaign[0]
+        return campaignObject
     } catch (error) {
         console.log(error)
         if(error instanceof mongoose.Error.CastError) {

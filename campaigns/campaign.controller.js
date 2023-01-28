@@ -7,7 +7,8 @@ const createCampaign = async (req, res) => {
         const requests = { ...req.body, image: req.file, user_id: req.user.id, fileValidationError: req.fileValidationError }
         const newCampaign = campaignValidation.validateCampaignCreate(requests)
         const campaign = await campaignService.createCampaign(newCampaign)
-        res.status(201).send({ data: campaign, message: 'Campaign is created' })
+        const campaignWithHATEOAS = generateHATEOASLinks(campaign)
+        res.status(201).send({ data: campaignWithHATEOAS, message: 'Campaign is created' })
     } catch (error) {
         errorHandler(error, req, res)
     }
@@ -15,13 +16,15 @@ const createCampaign = async (req, res) => {
 
 const getAllCampaigns = async (req, res) => {
     const campaigns = await campaignService.getAllCampaigns()
-    res.status(200).send({ data: campaigns, message: 'Retrieve campaigns successfully' })
+    const campaignsWithHATEOAS = campaigns.map(campaign => generateHATEOASLinks(campaign))
+    res.status(200).send({ data: campaignsWithHATEOAS, message: 'Retrieve campaigns successfully' })
 }
 
 const getCampaignById = async (req, res) => {
     try {
         const campaign = await campaignService.getCampaignById(req.params.campaignId)
-        res.status(200).send({ data: campaign, message: 'Retrieve campaign successfully' })
+        const campaignWithHATEOAS = generateHATEOASLinks(campaign)
+        res.status(200).send({ data: campaignWithHATEOAS, message: 'Retrieve campaign successfully' })
     } catch (error) {
         errorHandler(error, req, res)
     }
@@ -52,6 +55,15 @@ const getCampaignDonors = async (req, res) => {
     } catch (error) {
         errorHandler(error, req, res)
     }
+}
+
+const generateHATEOASLinks = (campaign) => {
+    const _links = {
+        self: `/campaigns/${campaign._id}`,
+        comments: `/campaigns/${campaign._id}/comments`,
+        donors: `/campaigns/${campaign._id}/donors`,
+    }
+    return { ...campaign, _links }
 }
 
 const campaignController = Object.freeze({
